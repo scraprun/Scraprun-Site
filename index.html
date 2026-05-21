@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Orion Drift Scraprun Discord</title>
+  <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&family=Share+Tech+Mono&display=swap" rel="stylesheet"/>
+  <style>
+    :root {
+      --bg: #0a0c10;
+      --surface: #111318;
+      --border: #1e2230;
+      --accent: #5865f2;
+      --accent-glow: rgba(88,101,242,0.35);
+      --accent2: #00e5ff;
+      --accent2-glow: rgba(0,229,255,0.25);
+      --text: #e8eaf6;
+      --muted: #6b7280;
+      --discord: #5865f2;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Rajdhani', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    /* animated grid bg */
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(88,101,242,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(88,101,242,0.04) 1px, transparent 1px);
+      background-size: 48px 48px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    /* glowing orbs */
+    body::after {
+      content: '';
+      position: fixed;
+      width: 600px; height: 600px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(88,101,242,0.12) 0%, transparent 70%);
+      top: -200px; left: -200px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .orb2 {
+      position: fixed;
+      width: 500px; height: 500px;
+      border-radius: 50%;
+      background: radial-gradient(circle, rgba(0,229,255,0.08) 0%, transparent 70%);
+      bottom: -150px; right: -150px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 60px 24px 80px;
+    }
+
+    /* HERO */
+    .hero {
+      text-align: center;
+      margin-bottom: 64px;
+      animation: fadeUp 0.8s ease both;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--accent2);
+      border: 1px solid rgba(0,229,255,0.3);
+      padding: 6px 14px;
+      border-radius: 4px;
+      margin-bottom: 28px;
+      letter-spacing: 0.1em;
+      background: rgba(0,229,255,0.05);
+    }
+
+    .hero-badge::before {
+      content: '';
+      width: 7px; height: 7px;
+      background: var(--accent2);
+      border-radius: 50%;
+      animation: pulse 1.6s ease infinite;
+    }
+
+    h1 {
+      font-size: clamp(42px, 8vw, 76px);
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    h1 span.highlight {
+      color: var(--accent);
+      text-shadow: 0 0 30px var(--accent-glow);
+    }
+
+    .hero-sub {
+      font-size: 18px;
+      color: var(--muted);
+      max-width: 480px;
+      margin: 0 auto 40px;
+      line-height: 1.6;
+      font-weight: 400;
+    }
+
+    .btn-join {
+      display: inline-flex;
+      align-items: center;
+      gap: 12px;
+      background: var(--discord);
+      color: #fff;
+      font-family: 'Rajdhani', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      padding: 16px 36px;
+      border-radius: 6px;
+      text-decoration: none;
+      border: none;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s, background 0.2s;
+      box-shadow: 0 0 30px rgba(88,101,242,0.4);
+    }
+
+    .btn-join:hover {
+      transform: translateY(-3px) scale(1.03);
+      background: #6a77f3;
+      box-shadow: 0 0 48px rgba(88,101,242,0.7);
+    }
+
+    .btn-join svg { flex-shrink: 0; }
+
+    /* STATS */
+    .stats {
+      display: flex;
+      justify-content: center;
+      gap: 40px;
+      margin-top: 48px;
+      flex-wrap: wrap;
+      animation: fadeUp 0.9s 0.2s ease both;
+    }
+
+    .stat {
+      text-align: center;
+    }
+
+    .stat-num {
+      font-size: 32px;
+      font-weight: 700;
+      color: var(--accent2);
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    .stat-label {
+      font-size: 13px;
+      color: var(--muted);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-top: 2px;
+    }
+
+    .stat-divider {
+      width: 1px;
+      background: var(--border);
+      align-self: stretch;
+    }
+
+    /* FEATURES */
+    .section-title {
+      font-size: 13px;
+      font-family: 'Share Tech Mono', monospace;
+      color: var(--accent2);
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      margin-bottom: 20px;
+    }
+
+    .features {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 16px;
+      margin-bottom: 64px;
+      animation: fadeUp 1s 0.3s ease both;
+    }
+
+    .feature-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 24px 22px;
+      transition: border-color 0.3s, transform 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0; left: 0; right: 0;
+      height: 2px;
+      background: linear-gradient(90deg, var(--accent), var(--accent2));
+      opacity: 0;
+      transition: opacity 0.3s;
+    }
+
+    .feature-card:hover {
+      border-color: rgba(88,101,242,0.5);
+      transform: translateY(-4px);
+    }
+
+    .feature-card:hover::before { opacity: 1; }
+
+    .feature-icon {
+      font-size: 28px;
+      margin-bottom: 12px;
+    }
+
+    .feature-title {
+      font-size: 17px;
+      font-weight: 700;
+      margin-bottom: 6px;
+      letter-spacing: 0.03em;
+    }
+
+    .feature-desc {
+      font-size: 14px;
+      color: var(--muted);
+      line-height: 1.5;
+      font-weight: 400;
+    }
+
+    /* CALENDAR */
+    .calendar-section {
+      animation: fadeUp 1s 0.4s ease both;
+      margin-bottom: 64px;
+    }
+
+    .calendar-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .calendar-header {
+      background: linear-gradient(135deg, rgba(88,101,242,0.15), rgba(0,229,255,0.08));
+      border-bottom: 1px solid var(--border);
+      padding: 16px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .calendar-header-title {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: 0.05em;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .calendar-header-title span {
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 12px;
+      color: var(--accent2);
+    }
+
+    .calendar-img-container {
+      padding: 0;
+      line-height: 0;
+    }
+
+    .calendar-img-container img {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: contain;
+    }
+
+    .calendar-fallback {
+      padding: 48px 24px;
+      text-align: center;
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 13px;
+      display: none;
+    }
+
+    /* CTA BOTTOM */
+    .cta-bottom {
+      text-align: center;
+      padding: 56px 32px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      position: relative;
+      overflow: hidden;
+      animation: fadeUp 1s 0.5s ease both;
+    }
+
+    .cta-bottom::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(ellipse at 50% 0%, rgba(88,101,242,0.12) 0%, transparent 65%);
+      pointer-events: none;
+    }
+
+    .cta-bottom h2 {
+      font-size: 36px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      position: relative;
+    }
+
+    .cta-bottom p {
+      color: var(--muted);
+      margin-bottom: 32px;
+      font-size: 16px;
+      position: relative;
+    }
+
+    .invite-url {
+      display: inline-block;
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 14px;
+      color: var(--accent2);
+      background: rgba(0,229,255,0.07);
+      border: 1px solid rgba(0,229,255,0.2);
+      border-radius: 4px;
+      padding: 10px 20px;
+      margin-bottom: 28px;
+      letter-spacing: 0.05em;
+      position: relative;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .invite-url:hover { background: rgba(0,229,255,0.14); }
+
+    .copied-msg {
+      display: none;
+      font-size: 12px;
+      color: #4caf50;
+      margin-top: 6px;
+      font-family: 'Share Tech Mono', monospace;
+    }
+
+    /* FOOTER */
+    footer {
+      text-align: center;
+      margin-top: 56px;
+      font-size: 13px;
+      color: var(--muted);
+      font-family: 'Share Tech Mono', monospace;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(28px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50%       { opacity: 0.4; transform: scale(0.7); }
+    }
+  </style>
+</head>
+<body>
+  <div class="orb2"></div>
+
+  <main>
+
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-badge">ORION DRIFT VR · SCRAPRUN</div>
+      <h1>THE SCRAPRUN<br><span class="highlight">DISCORD</span></h1>
+      <p class="hero-sub">The community hub for Orion Drift's Scraprun — coordinate runs, dodge traps, and never miss an event again.</p>
+      <a class="btn-join" href="https://discord.gg/zYmMnQpXZA" target="_blank" rel="noopener">
+        <!-- Discord logo -->
+        <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.052a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+        </svg>
+        JOIN THE SERVER
+      </a>
+    </section>
+
+    <!-- FEATURES -->
+    <section style="margin-bottom:64px; animation: fadeUp 0.9s 0.25s ease both;">
+      <div class="section-title">// what's inside</div>
+      <div class="features">
+        <div class="feature-card">
+          <div class="feature-icon">🏃</div>
+          <div class="feature-title">Runner Strats</div>
+          <div class="feature-desc">Navigate a challenging multi layer obstacle course. Share tips, routes, and tricks to survive the round and reach The End.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">🪤</div>
+          <div class="feature-title">Scrapper Tactics</div>
+          <div class="feature-desc">Master traps and the Heartball-Gun to eliminate runners. Coordinate with your team and refine your trap timing.</div>
+        </div>
+        <div class="feature-card">
+          <div class="feature-icon">📅</div>
+          <div class="feature-title">Event Coordination</div>
+          <div class="feature-desc">Scraprun events are only hosted once a day. We post alerts so you never miss an event.</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALENDAR -->
+    <section class="calendar-section">
+      <div class="section-title">// event calendar</div>
+      <div class="calendar-wrap">
+        <div class="calendar-header">
+          <div class="calendar-header-title">
+            📅 Upcoming Events
+            <span>SCHEDULE</span>
+          </div>
+          <div style="font-family:'Share Tech Mono',monospace;font-size:12px;color:var(--muted);">2026</div>
+        </div>
+        <div class="calendar-img-container">
+          <img
+            src="calendar.png"
+            alt="Event Calendar"
+            onerror="this.style.display='none'; document.querySelector('.calendar-fallback').style.display='block';"
+          />
+          <div class="calendar-fallback">
+            [ calendar.png not found — place calendar.png in the same folder as this file ]
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CTA BOTTOM -->
+    <section class="cta-bottom">
+      <h2>Ready to scrap — or run?</h2>
+      <p>Join the community, catch the next Scraprun window, and see if you've got what it takes to reach The End.</p>
+      <div class="invite-url" onclick="copyInvite(this)" title="Click to copy">
+        discord.gg/zYmMnQpXZA
+      </div>
+      <div class="copied-msg" id="copiedMsg">✔ Copied to clipboard!</div>
+      <br/>
+      <a class="btn-join" href="https://discord.gg/zYmMnQpXZA" target="_blank" rel="noopener" style="margin-top:8px;">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor">
+          <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057c.002.022.015.043.033.052a19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z"/>
+        </svg>
+        JOIN NOW — IT'S FREE
+      </a>
+    </section>
+
+  </main>
+
+  <footer>
+    &copy; 2026 &nbsp;·&nbsp; discord.gg/zYmMnQpXZA &nbsp;·&nbsp; not affiliated with Discord Inc.
+  </footer>
+
+  <script>
+    function copyInvite(el) {
+      navigator.clipboard.writeText('https://discord.gg/zYmMnQpXZA').then(() => {
+        const msg = document.getElementById('copiedMsg');
+        msg.style.display = 'block';
+        el.style.color = '#4caf50';
+        setTimeout(() => {
+          msg.style.display = 'none';
+          el.style.color = '';
+        }, 2000);
+      });
+    }
+  </script>
+</body>
+</html>
+
+</html>
+</html>
+</html>
+</html>
