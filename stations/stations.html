@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>ScrapRun Stations</title>
+  <style>
+    :root { --bg:#0b1020; --panel:#11182d; --panel-2:#17213d; --text:#f3f6ff; --muted:#aeb8d6; --border:rgba(255,255,255,.12); --good:#86efac; --warn:#facc15; --shadow:0 20px 60px rgba(0,0,0,.35); }
+    * { box-sizing: border-box; }
+    body { margin:0; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; color:var(--text); background:radial-gradient(circle at top left,rgba(125,211,252,.18),transparent 32rem),radial-gradient(circle at top right,rgba(134,239,172,.10),transparent 28rem),var(--bg); min-height:100vh; }
+    main { width:min(1180px,calc(100% - 32px)); margin:0 auto; padding:38px 0 60px; }
+    header { display:flex; justify-content:space-between; gap:24px; align-items:end; margin-bottom:24px; }
+    h1 { margin:0 0 8px; font-size:clamp(2rem,4vw,4rem); line-height:1; letter-spacing:-.055em; }
+    .subtitle { margin:0; color:var(--muted); font-size:1rem; max-width:720px; }
+    .status-pill { display:inline-flex; align-items:center; gap:8px; padding:10px 14px; border:1px solid var(--border); background:rgba(255,255,255,.06); border-radius:999px; color:var(--muted); white-space:nowrap; }
+    .dot { width:9px; height:9px; border-radius:999px; background:var(--warn); box-shadow:0 0 14px currentColor; }
+    .dot.ok { background:var(--good); }
+    .controls,.stats { background:rgba(17,24,45,.82); border:1px solid var(--border); border-radius:22px; box-shadow:var(--shadow); backdrop-filter:blur(14px); }
+    .controls { display:grid; grid-template-columns:1.1fr 1fr 1fr 1fr auto; gap:12px; padding:14px; margin-bottom:16px; position:sticky; top:12px; z-index:10; }
+    label { display:block; color:var(--muted); font-size:.78rem; font-weight:700; text-transform:uppercase; letter-spacing:.08em; margin-bottom:7px; }
+    select,input,button { width:100%; border:1px solid var(--border); border-radius:14px; background:var(--panel-2); color:var(--text); padding:12px 13px; font:inherit; outline:none; }
+    select:focus,input:focus { border-color:rgba(125,211,252,.8); box-shadow:0 0 0 3px rgba(125,211,252,.16); }
+    button { align-self:end; cursor:pointer; background:linear-gradient(135deg,#38bdf8,#22c55e); color:#061018; font-weight:800; border:none; }
+    button:hover { filter:brightness(1.05); }
+    .stats { display:grid; grid-template-columns:repeat(4,1fr); gap:1px; overflow:hidden; margin-bottom:16px; }
+    .stat { padding:18px; background:rgba(255,255,255,.035); }
+    .stat strong { display:block; font-size:1.7rem; letter-spacing:-.04em; }
+    .stat span { color:var(--muted); font-size:.88rem; }
+    .table-wrap { overflow:hidden; border:1px solid var(--border); border-radius:22px; background:rgba(17,24,45,.82); box-shadow:var(--shadow); }
+    table { width:100%; border-collapse:collapse; }
+    th,td { padding:14px 16px; text-align:left; border-bottom:1px solid var(--border); vertical-align:middle; }
+    th { position:sticky; top:95px; background:rgba(11,16,32,.95); color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; z-index:5; }
+    tr:last-child td { border-bottom:none; }
+    tbody tr:hover { background:rgba(125,211,252,.06); }
+    .station { display:flex; align-items:center; gap:12px; min-width:220px; }
+    .logo { width:38px; height:38px; border-radius:12px; object-fit:cover; background:rgba(255,255,255,.08); flex:0 0 auto; }
+    .station-name { font-weight:800; line-height:1.2; }
+    .fleet-name { color:var(--muted); font-size:.9rem; margin-top:2px; }
+    .number { font-variant-numeric:tabular-nums; font-weight:800; }
+    .scraprun { color:var(--good); font-size:1.05rem; }
+    .badge { display:inline-flex; align-items:center; border:1px solid var(--border); background:rgba(255,255,255,.06); padding:6px 9px; border-radius:999px; color:var(--muted); white-space:nowrap; }
+    .empty,.error { padding:28px; color:var(--muted); text-align:center; }
+    .error { color:#fecaca; }
+    footer { color:var(--muted); font-size:.85rem; margin-top:18px; text-align:center; }
+    @media (max-width:900px) { header{display:block}.status-pill{margin-top:18px}.controls{position:static;grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)} th{position:static} table,thead,tbody,th,td,tr{display:block} thead{display:none} tbody tr{padding:12px;border-bottom:1px solid var(--border)} tbody tr:last-child{border-bottom:none} td{border:none;padding:8px 6px} td::before{content:attr(data-label);display:block;color:var(--muted);font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.08em;margin-bottom:4px} }
+  </style>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>ScrapRun Stations</h1>
+        <p class="subtitle">Stations ranked by current players in the ScrapRun district. Filter by region or fleet name.</p>
+      </div>
+      <div class="status-pill" aria-live="polite"><span id="statusDot" class="dot"></span><span id="statusText">Loading stations…</span></div>
+    </header>
+
+    <section class="controls" aria-label="Station filters">
+      <div><label for="searchInput">Search</label><input id="searchInput" type="search" placeholder="Station or fleet name" autocomplete="off" /></div>
+      <div><label for="regionFilter">Region</label><select id="regionFilter"><option value="">All regions</option></select></div>
+      <div><label for="fleetFilter">Fleet</label><select id="fleetFilter"><option value="">All fleets</option></select></div>
+      <div><label for="sortSelect">Sort</label><select id="sortSelect"><option value="scraprun-desc">ScrapRun players: high to low</option><option value="scraprun-asc">ScrapRun players: low to high</option><option value="fleet-asc">Fleet name: A to Z</option><option value="region-asc">Region: A to Z</option><option value="total-desc">Total players: high to low</option></select></div>
+      <button id="refreshButton" type="button">Refresh</button>
+    </section>
+
+    <section class="stats" aria-label="Station totals">
+      <div class="stat"><strong id="visibleStations">0</strong><span>visible stations</span></div>
+      <div class="stat"><strong id="scraprunPlayers">0</strong><span>ScrapRun players</span></div>
+      <div class="stat"><strong id="totalPlayers">0</strong><span>total players</span></div>
+      <div class="stat"><strong id="updatedAt">—</strong><span>last updated</span></div>
+    </section>
+
+    <section class="table-wrap" aria-label="ScrapRun station table">
+      <table><thead><tr><th>Station</th><th>Region</th><th>ScrapRun</th><th>Total</th><th>Online</th></tr></thead><tbody id="stationRows"><tr><td colspan="5" class="empty">Loading station data…</td></tr></tbody></table>
+    </section>
+
+    <footer>Data loads through your Cloudflare Worker so your API key is not exposed in the browser.</footer>
+  </main>
+
+  <script>
+    // Replace this with your deployed Cloudflare Worker URL.
+    // Example: "https://scraprun-api.your-subdomain.workers.dev"
+    const API_ENDPOINT = "scraprun-api.mereon-od.workers.dev";
+
+    const els = {
+      statusDot: document.getElementById("statusDot"), statusText: document.getElementById("statusText"), searchInput: document.getElementById("searchInput"),
+      regionFilter: document.getElementById("regionFilter"), fleetFilter: document.getElementById("fleetFilter"), sortSelect: document.getElementById("sortSelect"),
+      refreshButton: document.getElementById("refreshButton"), stationRows: document.getElementById("stationRows"), visibleStations: document.getElementById("visibleStations"),
+      scraprunPlayers: document.getElementById("scraprunPlayers"), totalPlayers: document.getElementById("totalPlayers"), updatedAt: document.getElementById("updatedAt"),
+    };
+    let stations = [];
+    const getScraprunCount = (s) => Number(s?.district_populations?.scraprun ?? s?.scraprun_players ?? 0);
+    const getTotalPlayers = (s) => Number(s?.player_count ?? 0);
+    const normalizeText = (v) => String(v ?? "").toLowerCase().trim();
+    const uniqueSorted = (values) => [...new Set(values.filter(Boolean))].sort((a,b) => a.localeCompare(b));
+
+    function setStatus(message, ok = false) { els.statusText.textContent = message; els.statusDot.classList.toggle("ok", ok); }
+    function escapeHtml(value) { return String(value ?? "").replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;"); }
+    function fillSelect(select, values, defaultLabel) { const current = select.value; select.innerHTML = `<option value="">${defaultLabel}</option>`; for (const value of values) { const option = document.createElement("option"); option.value = value; option.textContent = value; select.appendChild(option); } if (values.includes(current)) select.value = current; }
+
+    function applyFiltersAndSort() {
+      const search = normalizeText(els.searchInput.value);
+      const region = els.regionFilter.value;
+      const fleet = els.fleetFilter.value;
+      const sort = els.sortSelect.value;
+      let visible = stations.filter((s) => (!search || normalizeText(s.station_name).includes(search) || normalizeText(s.fleet_name).includes(search)) && (!region || s.region === region) && (!fleet || s.fleet_name === fleet));
+      visible.sort((a,b) => {
+        switch (sort) {
+          case "scraprun-asc": return getScraprunCount(a) - getScraprunCount(b) || String(a.station_name).localeCompare(String(b.station_name));
+          case "fleet-asc": return String(a.fleet_name).localeCompare(String(b.fleet_name)) || getScraprunCount(b) - getScraprunCount(a);
+          case "region-asc": return String(a.region).localeCompare(String(b.region)) || getScraprunCount(b) - getScraprunCount(a);
+          case "total-desc": return getTotalPlayers(b) - getTotalPlayers(a) || getScraprunCount(b) - getScraprunCount(a);
+          default: return getScraprunCount(b) - getScraprunCount(a) || getTotalPlayers(b) - getTotalPlayers(a);
+        }
+      });
+      renderRows(visible); renderStats(visible);
+    }
+
+    function renderRows(visible) {
+      if (!visible.length) { els.stationRows.innerHTML = `<tr><td colspan="5" class="empty">No stations match those filters.</td></tr>`; return; }
+      els.stationRows.innerHTML = "";
+      for (const s of visible) {
+        const logo = s?.config?.logo || "";
+        const tr = document.createElement("tr");
+        tr.innerHTML = `<td data-label="Station"><div class="station">${logo ? `<img class="logo" src="${escapeHtml(logo)}" alt="" loading="lazy">` : `<div class="logo" aria-hidden="true"></div>`}<div><div class="station-name">${escapeHtml(s.station_name || "Unnamed station")}</div><div class="fleet-name">${escapeHtml(s.fleet_name || "Unknown fleet")}</div></div></div></td><td data-label="Region"><span class="badge">${escapeHtml(s.region || "Unknown")}</span></td><td data-label="ScrapRun"><span class="number scraprun">${getScraprunCount(s).toLocaleString()}</span></td><td data-label="Total"><span class="number">${getTotalPlayers(s).toLocaleString()}</span></td><td data-label="Online">${s.online ? "Yes" : "No"}</td>`;
+        els.stationRows.appendChild(tr);
+      }
+    }
+
+    function renderStats(visible) {
+      els.visibleStations.textContent = visible.length.toLocaleString();
+      els.scraprunPlayers.textContent = visible.reduce((sum,s) => sum + getScraprunCount(s), 0).toLocaleString();
+      els.totalPlayers.textContent = visible.reduce((sum,s) => sum + getTotalPlayers(s), 0).toLocaleString();
+    }
+
+    async function loadStations() {
+      try {
+        setStatus("Loading stations…"); els.refreshButton.disabled = true;
+        const response = await fetch(API_ENDPOINT, { headers: { Accept: "application/json" } });
+        if (!response.ok) throw new Error(`Worker returned ${response.status}`);
+        const data = await response.json();
+        stations = Array.isArray(data.items) ? data.items : [];
+        fillSelect(els.regionFilter, uniqueSorted(stations.map((s) => s.region)), "All regions");
+        fillSelect(els.fleetFilter, uniqueSorted(stations.map((s) => s.fleet_name)), "All fleets");
+        const fetchedAt = data.fetched_at ? new Date(data.fetched_at) : new Date();
+        els.updatedAt.textContent = fetchedAt.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" });
+        applyFiltersAndSort(); setStatus(`Loaded ${stations.length.toLocaleString()} stations`, true);
+      } catch (error) {
+        console.error(error); setStatus("Could not load stations");
+        els.stationRows.innerHTML = `<tr><td colspan="5" class="error">Could not load station data. Check your Worker URL, API key secret, and CORS settings.</td></tr>`;
+      } finally { els.refreshButton.disabled = false; }
+    }
+
+    els.searchInput.addEventListener("input", applyFiltersAndSort);
+    els.regionFilter.addEventListener("change", applyFiltersAndSort);
+    els.fleetFilter.addEventListener("change", applyFiltersAndSort);
+    els.sortSelect.addEventListener("change", applyFiltersAndSort);
+    els.refreshButton.addEventListener("click", loadStations);
+    loadStations();
+  </script>
+</body>
+</html>
