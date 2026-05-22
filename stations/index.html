@@ -26,10 +26,15 @@
     .stat { padding:18px; background:rgba(255,255,255,.035); }
     .stat strong { display:block; font-size:1.7rem; letter-spacing:-.04em; }
     .stat span { color:var(--muted); font-size:.88rem; }
-    .table-wrap { overflow:hidden; border:1px solid var(--border); border-radius:22px; background:rgba(17,24,45,.82); box-shadow:var(--shadow); }
-    table { width:100%; border-collapse:collapse; }
+    .table-wrap { overflow:auto; border:1px solid var(--border); border-radius:22px; background:rgba(17,24,45,.82); box-shadow:var(--shadow); }
+    table { width:100%; border-collapse:collapse; table-layout:fixed; }
+    col.station-col { width:46%; }
+    col.region-col { width:18%; }
+    col.scraprun-col { width:13%; }
+    col.total-col { width:11%; }
+    col.online-col { width:12%; }
     th,td { padding:14px 16px; text-align:left; border-bottom:1px solid var(--border); vertical-align:middle; }
-    th { position:sticky; top:95px; background:rgba(11,16,32,.95); color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; z-index:5; }
+    th { position:static; background:rgba(11,16,32,.95); color:var(--muted); font-size:.78rem; text-transform:uppercase; letter-spacing:.08em; z-index:5; }
     tr:last-child td { border-bottom:none; }
     tbody tr:hover { background:rgba(125,211,252,.06); }
     .station { display:flex; align-items:center; gap:12px; min-width:220px; }
@@ -71,7 +76,19 @@
     </section>
 
     <section class="table-wrap" aria-label="ScrapRun station table">
-      <table><thead><tr><th>Station</th><th>Region</th><th>ScrapRun</th><th>Total</th><th>Online</th></tr></thead><tbody id="stationRows"><tr><td colspan="5" class="empty">Loading station data…</td></tr></tbody></table>
+      <table>
+        <colgroup>
+          <col class="station-col">
+          <col class="region-col">
+          <col class="scraprun-col">
+          <col class="total-col">
+          <col class="online-col">
+        </colgroup>
+        <thead>
+          <tr><th>Station</th><th>Region</th><th>ScrapRun</th><th>Total</th><th>Online</th></tr>
+        </thead>
+        <tbody id="stationRows"><tr><td colspan="5" class="empty">Loading station data…</td></tr></tbody>
+      </table>
     </section>
 
     <footer>Data loads through your Cloudflare Worker so your API key is not exposed in the browser.</footer>
