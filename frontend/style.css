@@ -1,0 +1,33 @@
+:root { color-scheme: dark; font-family: Inter, ui-sans-serif, system-ui, Arial, sans-serif; background:#0f172a; color:#e5e7eb; }
+* { box-sizing: border-box; }
+body { margin:0; padding:24px; }
+header { display:flex; gap:16px; justify-content:space-between; align-items:center; margin-bottom:20px; }
+h1 { margin:0; font-size:28px; }
+button, input, select, textarea { border:1px solid #334155; border-radius:10px; padding:10px 12px; background:#111827; color:#e5e7eb; }
+button { cursor:pointer; background:#2563eb; border-color:#2563eb; font-weight:700; }
+button.secondary { background:#1f2937; border-color:#334155; }
+button.danger { background:#991b1b; border-color:#991b1b; }
+button:disabled { opacity:.55; cursor:not-allowed; }
+a { color:#93c5fd; }
+.card { background:#111827; border:1px solid #263244; border-radius:18px; padding:18px; margin-bottom:16px; box-shadow:0 8px 24px rgb(0 0 0 / .25); }
+.muted { color:#94a3b8; }
+.hidden { display:none !important; }
+nav { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:16px; }
+nav button { background:#1f2937; border-color:#334155; }
+nav button.active { background:#2563eb; border-color:#2563eb; }
+.grid { display:grid; grid-template-columns:repeat(auto-fit, minmax(220px,1fr)); gap:12px; }
+.field { display:flex; flex-direction:column; gap:6px; }
+label { color:#cbd5e1; font-size:13px; }
+table { width:100%; border-collapse:collapse; background:#0b1220; border-radius:12px; overflow:hidden; }
+th, td { padding:10px; border-bottom:1px solid #1e293b; text-align:left; vertical-align:top; }
+th { color:#cbd5e1; background:#111827; }
+.badge { display:inline-flex; padding:4px 8px; border-radius:999px; font-size:12px; background:#334155; margin:2px; }
+.good { background:#14532d; }
+.warn { background:#713f12; }
+.bad { background:#7f1d1d; }
+.row-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.notice { border-left:4px solid #2563eb; }
+.error { border-left:4px solid #dc2626; color:#fecaca; }
+.checkbox-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(240px,1fr)); gap:8px; }
+.checkbox { display:flex; gap:8px; align-items:flex-start; padding:8px; border:1px solid #334155; border-radius:10px; }
+.checkbox input { margin-top:2px; }
